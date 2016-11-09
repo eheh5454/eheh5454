@@ -1,5 +1,4 @@
 import random
-import json
 import time
 from pico2d import *
 import game_framework
