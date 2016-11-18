@@ -533,7 +533,7 @@ class Explode:
 class Score:
     def __init__(self):
         self.score = 0
-        self.font = load_font('ENCR10B.TTF',35)
+        self.font = load_font('a우주소년.TTF',35)
 
     def draw(self):
         self.font.draw(100,650,'Score: %d' % (self.score))
