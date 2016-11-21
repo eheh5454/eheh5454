@@ -11,7 +11,7 @@ grass = None
 font = None
 score = 0
 
-explode_list = []
+
 
 class Map:
     PIXEL_PER_METER = (10.0 / 0.1)  # 10 pixel 30 cm
