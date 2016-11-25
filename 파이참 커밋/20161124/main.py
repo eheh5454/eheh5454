@@ -447,7 +447,7 @@ class Player:
                     self.state = self.STAND
                     self.ydir = 0
 
-    def hp_drop(self, drop_hp):
+    def hp_drop(self, drop_hp):   ##hp 추가
          self.hp -= drop_hp
          if (self.hp <= 0):
               self.LIFE = 0
