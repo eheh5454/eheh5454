@@ -455,9 +455,9 @@ class Player:
          else:
              return self.LIFE
 
-class Attack:
+class Attack
     PIXEL_PER_METER = (25.0/ 0.3)
-    RUN_SPEED_KMPH = 100.0
+    RUN_SPEED_KMPH = 100.0:
     RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
     RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
     RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
@@ -479,10 +479,10 @@ class Attack:
             Attack.attackshot_sound.set_volume(128)
 
 
-    def eat(self):
+    def eat(self):  ##폭발음
         self.eat_sound.play()
 
-    def attackshot(self):
+    def attackshot(self):  ##발사음
         self.attackshot_sound.play()
 
     def handle_events(self,event):
@@ -511,7 +511,7 @@ class Attack:
     def draw_bb(self):
         draw_rectangle(*self.get_bb())
 
-class Explode:
+class Explode: ##폭발 이펙트
 
     TIME_PER_ACTION = 0.7
     ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
@@ -548,7 +548,7 @@ class Explode:
         self.explode_sound.play()
 
 
-class Score:
+class Score: ##점수
     def __init__(self):
         self.score = 0
         self.font = load_font('a우주소년.TTF',35)
