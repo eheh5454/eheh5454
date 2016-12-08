@@ -14,6 +14,7 @@ font = None
 Attack_List = []
 Explode_List = []
 EnemyAttack_List = []
+Attack_List2 = []
 
 class Time:
     def __init__(self):
@@ -190,7 +191,7 @@ class Enemy1:
         self.image.clip_draw(self.frame * 100, 0, 100, 80, self.x, self.y)
 
     def get_bb(self):
-        return self.x - 50,self.y - 50,self.x ,self.y + 50
+        return self.x - 1,self.y - 50,self.x+1 ,self.y + 50
 
     def draw_bb(self):
         draw_rectangle(*self.get_bb())
@@ -304,7 +305,7 @@ class Enemy2:
         self.image.clip_draw(self.frame * 100, 0, 100, 80, self.x, self.y)
 
     def get_bb(self):
-        return self.x - 50,self.y - 50,self.x + 50,self.y + 50
+        return self.x - 1,self.y - 50,self.x + 1,self.y + 50
 
     def draw_bb(self):
         draw_rectangle(*self.get_bb())
@@ -398,7 +399,7 @@ class Enemy3:
         self.image.clip_draw(self.frame * 100, 0, 100, 75, self.x, self.y)
 
     def get_bb(self):
-        return self.x - 50, self.y - 40, self.x + 50, self.y + 40
+        return self.x - 1, self.y - 40, self.x + 1, self.y + 40
 
 class Enemy4:
     PIXEL_PER_METER = (5.0 / 0.1)  # 픽셀/미터
@@ -475,7 +476,7 @@ class Enemy4:
         self.image.clip_draw(self.frame * 100, 0, 100, 80, self.x, self.y)
 
     def get_bb(self):
-        return self.x - 50, self.y - 30, self.x + 50, self.y + 30
+        return self.x - 1, self.y - 30, self.x + 1, self.y + 30
 
 class Player:
 
@@ -502,6 +503,7 @@ class Player:
         self.total_frames = 0.0
         self.state = self.STAND
         self.font = load_font('a우주소년.TTF',120)
+        self.font2 = load_font('a우주소년.TTF',35)
         if self.image == None:
             self.image = load_image('Ayin.png')
 
@@ -523,9 +525,10 @@ class Player:
         self.image.clip_draw(self.frame * 100, 0, 100, 100, self.x, self.y)
         if (self.LIFE == 0):
             self.font.draw(250,360,'Game over')
+        self.font2.draw(100,600,'HP: %d' % (self.hp))
 
     def get_bb(self):
-        return self.x - 15, self.y -20, self.x + 25, self.y + 15
+        return self.x, self.y -10, self.x + 25, self.y + 10
 
     def draw_bb(self):
         draw_rectangle(*self.get_bb())
@@ -573,6 +576,10 @@ class Player:
         elif (score.score < 100):
             newattack = Attack2(self.x  + 50, self.y)
             Attack_List2.append(newattack)
+
+    def get_special(self):
+        newattack = SpecialAttack(self.x + 50,self.y)
+        SpecialAttack_List.append(newattack)
 
 
     def hp_drop(self, drop_hp):   ##hp 추가
@@ -692,6 +699,61 @@ class Attack2:
 
     def draw_bb(self):
         draw_rectangle(*self.get_bb())
+        
+class SpecialAttack:
+
+    PIXEL_PER_METER = (10.0 / 0.3)
+    RUN_SPEED_KMPH = 40.0
+    RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
+    RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
+    RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
+
+    ATTACK_STATE = 0
+
+    image = None
+    ayinspecialattack_sound = None
+
+    def __init__(self,x,y):
+        self.x, self.y = x,y
+        self.attackcount = 5
+        self.xdir = 1
+        self.frame = 0
+        self.total_frames = 0.0
+        self.state = self.ATTACK_STATE
+        self.skilltime = 0.0
+        self.font = load_font('a우주소년.TTF',30)
+        if SpecialAttack.image == None:
+            SpecialAttack.image = load_image('제목 없음-1.png')
+        if SpecialAttack.ayinspecialattack_sound == None:
+            SpecialAttack.ayinspecialattack_sound = load_wav('Resource\\Sound\\AyinSpecialAttack.wav')
+            SpecialAttack.ayinspecialattack_sound.set_volume(48)
+
+    def ayinspecialattack(self):
+        self.ayinspecialattack_sound.play()
+
+    def handle_events(self, event):
+        if (self.attackcount > 0):
+            if event.type == SDL_KEYDOWN and event.key == SDLK_s:
+                player.get_special()
+                self.attackcount -= 1
+
+
+
+    def update(self, frame_time):
+        distance = SpecialAttack.RUN_SPEED_PPS * frame_time
+        self.x += (self.xdir * distance)
+
+
+
+    def draw(self):
+        self.image.clip_draw(self.frame * 400, 0, 400, 208, self.x, self.y)
+
+
+    def get_bb(self):
+        return self.x - 100, self.y -100, self.x + 25, self.y + 120
+
+    def draw_bb(self):
+        draw_rectangle(*self.get_bb())
 
 
 
@@ -773,6 +835,8 @@ class Score: ##점수
 
     def draw(self):
         self.font.draw(100,650,'Score: %d' % (self.score))
+        self.font.draw(50, 50, 'SpecialAttack: %d' % (specialattack.attackcount))
+
 
     def score_get(self):
         self.score += 5
@@ -792,6 +856,8 @@ def handle_events(frame_time):
         else:
             player.handle_event(event)
             attack.handle_events(event)
+            attack2.handle_events(event)
+            specialattack.handle_events(event)
 
 def collide(a,b):
     left_a, bottom_a, right_a, top_a = a.get_bb()
@@ -809,7 +875,7 @@ def collide(a,b):
 
 
 def enter():
-    global time,player,map,attack,Enemy_1,Enemy_2,Enemy_3,Enemy_4,score,Explode_List,EnemyAttack_List,Attack_List,attack2,Attack_List2
+    global time,SpecialAttack_List,player,map,attack,Enemy_1,Enemy_2,Enemy_3,Enemy_4,score,Explode_List,EnemyAttack_List,Attack_List,attack2,Attack_List2,specialattack
     open_canvas(1024,720)
     player = Player()
     score = Score()
@@ -819,6 +885,7 @@ def enter():
 
     attack = Attack(0,0)
     attack2 = Attack2(0,0)
+    specialattack = SpecialAttack(0,0)
 
     Enemy_1 = []
     Enemy_2 = []
@@ -828,13 +895,14 @@ def enter():
     Attack_List2 = []
     Explode_List = []
     EnemyAttack_List = []
+    SpecialAttack_List=[]
 
 
 
 
 
 def exit():
-    global time,player,map,attack,Enemy_1,Enemy_2,Enemy_3,Enemy_4,score,Explode_List,EnemyAttack_List,Attack_List
+    global time,SpecialAttack_List,player,map,attack,Enemy_1,Enemy_2,Enemy_3,Enemy_4,score,Explode_List,EnemyAttack_List,Attack_List,Attack_List2,attack2,specialattack
     del(time)
     del(player)
     del(map)
@@ -844,8 +912,10 @@ def exit():
     del(Enemy_4)
     del(Attack_List)
     del(Attack_List2)
+    del(SpecialAttack_List)
     del(attack)
     del(attack2)
+    del(specialattack)
     del(score)
     del(Explode_List)
     del(EnemyAttack_List)
@@ -884,6 +954,9 @@ def update(frame_time):
 
     for attack2 in Attack_List2:
         attack2.update(frame_time)
+
+    for specialattack in SpecialAttack_List:
+        specialattack.update(frame_time)
 
 
 
@@ -1036,6 +1109,9 @@ def update(frame_time):
                   enemy_four_explode = Explode(enemy4.x, enemy4.y)
                   Explode_List.append(enemy_four_explode)
 
+    ##필살기와 적군 충돌
+
+
 
 
 
@@ -1060,6 +1136,8 @@ def draw(frame_time):
         attack.draw()
     for attack2 in Attack_List2:
         attack2.draw()
+    for specialattack in SpecialAttack_List:
+        specialattack.draw()
     player.draw()
 
 
