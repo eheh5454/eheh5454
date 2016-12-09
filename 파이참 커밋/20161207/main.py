@@ -741,6 +741,7 @@ class SpecialAttack:
 
     def update(self, frame_time):
         distance = SpecialAttack.RUN_SPEED_PPS * frame_time
+
         self.x += (self.xdir * distance)
 
 
